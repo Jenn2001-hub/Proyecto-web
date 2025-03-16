@@ -1,7 +1,8 @@
-const express = require('express');
-const router = express.Rputer();
-const authController = require('../controllers/auth.controller');
+const express = require('express'); // Importa Express
+const router = express.Router(); // Crea un enrutador
+const authController = require('../controllers/auth.controller'); // Importar controlador de autenticación
 
-router.post('auth/login', authController.login);
+// Ruta para iniciar sesión
+router.post('/auth/login', authController.login);
 
-module.exports = router;
+module.exports = router; // Exporta el enrutador

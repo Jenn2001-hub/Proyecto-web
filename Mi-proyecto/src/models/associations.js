@@ -1,12 +1,12 @@
-const user = require('./user.model');
-const Project = require('./project.model');
-const userProject = requre('./userProject.model');
+const user = require('./user.model'); // Importa modelo de usuario
+const Project = require('./project.model'); // Importa modelo de proyecto
+const userProject = require('./userProject.model'); // Importa modelo de relación usuario-proyecto
 
-//relacion muchos a muchos
-user.belongsToMany(Project, { through: userProject, foreignKey: 'usuario_id', as: 'proyectos'});
-Project.belongsToMany( user, { through: userProject, foreignKey: 'proyecto_id', as: 'usuarios'});
+// Relación muchos a muchos entre usuarios y proyectos
+user.belongsToMany(Project, { through: userProject, foreignKey: 'usuario_id', as: 'proyectos' });
+Project.belongsToMany(user, { through: userProject, foreignKey: 'proyecto_id', as: 'usuarios' });
 
-//reslacion de administrador
-Project.belongsToMany( user, { through: userProject, foreignKey: 'administrador_id', as: 'adminstrador'});
+// Relación de administrador en proyectos
+Project.belongsTo(user, { foreignKey: 'administrador_id', as: 'administrador' });
 
-module.exports = { user, Project, userProject};
+module.exports = { user, Project, userProject }; // Exporta modelos

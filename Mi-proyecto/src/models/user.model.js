@@ -1,24 +1,17 @@
-const { DataTypes }= require('sequelize');
-const sequelize = require('../config/db');
+const { DataTypes } = require('sequelize'); // Importa DataTypes de Sequelize
+const sequelize = require('../config/db'); // Importa instancia de Sequelize
 
-const USER =sequelize.define('usuarios',{
-    id:{ type: DataTypes.INTEGER, primaryKey: true, autoncrement: true},
-    nombre: { type: DataTypes.STRING, allowNull: false},
-    email: { type: DataTypes.STRING, allowNull: false, unique: true},
-    password: { type: DataTypes.STRING, allowNull: false},
-    rol_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: { model: 'roles', key: 'id'}
-    },
-    administrador_id: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        references: { model: 'usurios', key: 'id'}
-    }
+// Define el modelo de usuarios
+const USER = sequelize.define('usuarios', {
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true }, // ID único
+    nombre: { type: DataTypes.STRING, allowNull: false }, // Nombre del usuario
+    email: { type: DataTypes.STRING, allowNull: false, unique: true }, // Email del usuario
+    password: { type: DataTypes.STRING, allowNull: false }, // Contraseña del usuario
+    rol_id: { type: DataTypes.INTEGER, allowNull: false, references: { model: 'roles', key: 'id' } }, // ID del rol
+    administrador_id: { type: DataTypes.INTEGER, allowNull: true, references: { model: 'usuarios', key: 'id' } } // ID del administrador
 }, {
-    timestamps:false,
-    tableName: 'usuarios',
+    timestamps: false, // Desactiva timestamps
+    tableName: 'usuarios', // Nombre de la tabla en la base de datos
 });
 
-module.exports = User;
+module.exports = USER; // Exporta modelo

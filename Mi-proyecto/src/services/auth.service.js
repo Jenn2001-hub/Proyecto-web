@@ -6,17 +6,17 @@ const RolePermission = require('../models/rolePermission_model');
 
 dotenv.config();
 
-const SECRET_KEY = process.env.JWT_SECRET;//Obtener la clave secreta desde las varables de entorno
+const SECRET_KEY = process.env.JWT_SECRET;//Obtiene la clave secreta desde las varables de entorno
 
 exports.loginUser = async (email, password) => {
     try {
-        //verficar s el usuario existe
+        //verficar si el usuario existe
         const user = await user.findOne({ where: {email}}); // se indica el campo con el que el va a hacer la validacion
         if (!user) {
             throw new Error('Usuario no encontrado');
         }
 
-        // verificar s la contrase;a es correcta
+        // verificar si la contrase;a es correcta
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
             throw new Error('Contrase;a incorrecta');

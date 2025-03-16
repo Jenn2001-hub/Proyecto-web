@@ -1,13 +1,13 @@
-const userService = require('../services/user.service');
+const userService = require('../services/user.service'); // Importa el servicio de usuarios
 
-exports.createUser = async (req, res)=>{
-    try{
-        const {nombre, ElementInternals, password, rol_id, admnistrador_id}= req.body;
-        const newUser = await userService.createUser(nombre, ElementInternals, password, rol_id, admnistrador_id);
-        res.status(201).json({ message: ' usuario creado son exto', user: newUser});
-    } catch (err){
-        res.status(500).json({ message:err.message});
-
+// Función para crear un usuario
+exports.createUser = async (req, res) => {
+    try {
+        const { nombre, email, password, rol_id, administrador_id } = req.body; // Obtiene datos del cuerpo de la solicitud
+        const newUser = await userService.createUser(nombre, email, password, rol_id, administrador_id); // Llama al servicio para crear el usuario
+        res.status(201).json({ message: 'Usuario creado con éxito', user: newUser }); // Respuesta exitosa con el nuevo usuario
+    } catch (err) {
+        res.status(500).json({ message: err.message }); // Manejo de errores
     }
 };
 
