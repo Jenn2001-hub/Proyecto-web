@@ -1,12 +1,13 @@
-const authService = require('../services/auth.service'); // Importa el servicio de autenticación
+// importamos el servicio de auntenticacion
+const authService = require('../services/auth.service');
 
-// Función para iniciar sesión
-exports.login = async (req, res) => {
-    const { email, password } = req.body; // Obtiene email y contraseña del cuerpo de la solicitud
-    try {
-        const token = await authService.loginUser(email, password); // Llama al servicio para iniciar sesión
-        res.status(200).json({ message: 'Inicio de sesión exitoso', token }); // Respuesta exitosa con el token
-    } catch (err) {
-        res.status(400).json({ message: err.message }); // Manejo de errores
+// Controlador para el Inicio sesión
+exports.login = async (req, res) => {  // "req" contiene la solicitud del cliente con sus datos y "res" sirve para enviar respuestas ha esa solicitud
+    const { email, password } = req.body; // el "req.body" contiene los datos enviados por el cliente
+    try{ // "try" Si no hay problema con la solicitud
+        const token = await authService.loginUser(email, password);
+        res.status(200).json({ message: 'Inicio de sesión exitoso', token });
+    } catch (err) { // "catch" Si hay problema con la solicitud
+        res.status(400).json({ message: err.message});
     }
 };
