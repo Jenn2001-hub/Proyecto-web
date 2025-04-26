@@ -1,63 +1,55 @@
-const jwt = require('jsonwebtoken'); // Importar librería de "jsonwebtoken" para generar token de autenticación
-const bcrypt = require('bcryptjs'); // Importar la librería "bcryptjs" para cifrar contraseñas
-const dotenv = require('dotenv'); //importar las variables de entornos 
-// importamos el modelo user y el modelo rol permisos
-const  User = require ('../models/user.model');
-const RolePermisssion = require('../models/rolePermission.model');
+// Importación de dependencias
+const bcrypt = require('bcrypt'); // Biblioteca para encriptar y comparar contraseñas
+const jwt = require('jsonwebtoken'); // Biblioteca para generar y verificar JSON Web Tokens
+const User = require('../models/user.models'); // Modelo de usuario para interactuar con la base de datos
 
-dotenv.config();//cargar variables de entorno
+// Imprime el modelo User en la consola para depuración
+console.log('Modelo User importado:', User); // Depuración
 
-const SECRET_KEY = process.env.JWT_SECRET; // Obtener la clave secreta desde las claves de entorno
-// exportamos un servicio que va ha recibir una email y un password
-// Opcional - Verificar si la variable JWT_SECRET está definida
-// Para evitar errores si la variable no está definida
-// if (!SECRET_KEY) {
-//     throw new Error('La variable JWT_SECRET no está definida');
-// }
-exports.loginUser = async (email, password) => {
-    try{
-        // verifica que el ususario existe 
-        const user = await User.findOne({ where: {email}}); // el findOne es un modelo que se utilliza con sequelize para buscar
-        if (!user) {
-            throw new Error('Usuario no encontrada');
-        }
+// Función para autenticar a un usuario
+const loginUser = async (email, password) => {
+    // Imprime los valores recibidos para depuración
+    console.log('auth.service.js - Email recibido:', email); // Depuración
+    console.log('auth.service.js - Password recibido:', password); // Depuración
 
-        // Opcional - Verificar si el usuario está activo
-        // Para evitar que usuarios inactivos inicien sesión
-        // if (!user.isActive) {
-        //     throw new Error('El usuario no está activo');
-        // }
-
-        //Verificar si la contraseña es correcta
-        const isPasswordValid = await bcrypt.compare(password, user.password)
-        if (!isPasswordValid) {
-            throw new Error('Contraseña incorrecta');
-        }
-
-        // consultar permisos de rol
-        const rolePermissions = await RolePermisssion.findAll({
-            where: { rol_id: user.rol_id },
-            attributes: ['persimo_id']
-        });
-        
-        // Extraemos los permisos del resultado
-        const permisos = rolePermissions.map(rp => rp.permiso_id);
-
-        // Generar un token JWT con los datos del usuario y sus permisos
-        const token = jwt.sign(
-            { id: user.id, nombre: user.nombre, email: user.email, rol_id: user.rol_id, permisos },
-            SECRET_KEY,
-            { expiresIn: '1h'}
-        );
-
-        // Opcional - Verificar si el token se generó correctamente
-        // Para evitar errores si el token no se generó correctamente
-        // if (!token) {
-        //     throw new Error('Error al generar el token');
-        // }
-
-        return token;
-    } catch (error) {
-        throw new Error(error.message || 'Error al iniciar sesión');
+    // Validación: verifica si el email está definido
+    if (!email) {
+        throw new Error('email is not defined'); // Lanza error si falta el email
     }
-}
+    // Validación: verifica si la contraseña está definida
+    if (!password) {
+        throw new Error('password is not defined'); // Lanza error si falta la contraseña
+    }
+
+    // Busca un usuario en la base de datos por su email
+    const user = await User.findOne({ where: { email } });
+    // Imprime el usuario encontrado para depuración
+    console.log('auth.service.js - Usuario encontrado:', user); // Depuración
+
+    // Validación: verifica si el usuario existe
+    if (!user) {
+        throw new Error('Usuario no encontrado'); // Lanza error si no se encuentra el usuario
+    }
+
+    // Compara la contraseña proporcionada con la almacenada (encriptada)
+    const isMatch = await bcrypt.compare(password, user.password);
+    // Validación: verifica si las contraseñas coinciden
+    if (!isMatch) {
+        throw new Error('Contraseña incorrecta'); // Lanza error si la contraseña es incorrecta
+    }
+
+    // Genera un token JWT con los datos del usuario
+    const token = jwt.sign(
+        { id: user.id, email: user.email, rol_id: user.rol_id }, // Payload: datos incluidos en el token
+        process.env.JWT_SECRET, // Clave secreta para firmar el token
+        { expiresIn: '1h' } // Tiempo de expiración del token (1 hora)
+    );
+
+    // Retorna el token generado
+    return token;
+};
+
+// Exporta la función para su uso en otros módulos
+module.exports = { loginUser };
+
+module.exports = { loginUser };

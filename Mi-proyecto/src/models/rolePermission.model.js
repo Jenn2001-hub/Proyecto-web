@@ -1,30 +1,27 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database'); // Importación directa
+const sequelize = require('../config/db');
 
-// Verificación de instancia (debugging)
-console.log('Tipo de sequelize:', typeof sequelize);
-console.log('¿Define disponible?', 'define' in sequelize);
-
+// Define el modelomroles_permisos en la base de datos
 const RolePermission = sequelize.define('roles_permisos', {
-  role_id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    references: {
-      model: 'roles',
-      key: 'id'
+    rol_id: {
+        type: DataTypes.INTEGER,          
+        allowNull: false,                 
+        references: { // Clave foránea
+            model: 'roles', // Referencia a la tabla roles
+            key: 'id' // Referencia a la columna id
+        }
+    },
+    permisos_id: {
+        type: DataTypes.INTEGER,          
+        allowNull: false,                 
+        references: {                     
+            model: 'permisos', // Referencia a la tabla permisos
+            key: 'id' // Referencia a la columna id
+        }
     }
-  },
-  permission_id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    references: {
-      model: 'permisos',
-      key: 'id'
-    }
-  }
 }, {
-  tableName: 'roles_permisos',
-  timestamps: false
+    timestamps: false                    
 });
 
-module.exports = RolePermission;
+// Exporta el modelo para ser utilizado en otros archivos.
+module.exports = RolePermission;         

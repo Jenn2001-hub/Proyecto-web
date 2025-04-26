@@ -1,78 +1,130 @@
-// Importar servicio de proyectos
+// Importa el servicio de proyectos
 const projectService = require('../services/project.service');
 
-// Controlador para crear nuevos proyectos
-exports.createProject = async (req, res) => {
+// Controlador para crear un nuevo proyecto
+const createProject = async (req, res) => {
     try {
+        // Extrae nombre, descripción y administrador_id del cuerpo de la solicitud
         const { nombre, descripcion, administrador_id } = req.body;
-        const admin_from_token = req.user.administrador_id;
-        const newProject = await projectService.createProject(nombre, descripcion, administrador_id, admin_from_token);
-        res.status(201).json({ message: 'Proyecto creado con éxito', newProject});
-    } catch (err) {
-        res.status(500).json({ message: err.message });
+        // Crea el proyecto usando el servicio de proyectos
+        const newProject = await projectService.createProject(nombre, descripcion, administrador_id);
+        // Responde con código 201 y los detalles del nuevo proyecto
+        res.status(201).json(newProject);
+    } catch (error) {
+        // En caso de error, responde con código 500 y el mensaje de error
+        res.status(500).json({ message: error.message });
     }
 };
 
-// Controlador para obtener todos los proyectos asociados a un administrador
-exports.getAllProjects = async (req, res) => {
+// Controlador para obtener todos los proyectos
+const getAllProjects = async (req, res) => {
     try {
+        // Obtiene todos los proyectos usando el servicio
         const projects = await projectService.getAllProjects();
-        res.status(200).json({ message: 'Proyectos obtenidos con éxito', projects });
-    } catch (err) {
-        res.status(500).json({ message: err.message });
+        // Responde con código 200 y la lista de proyectos
+        res.status(200).json(projects);
+    } catch (error) {
+        // En caso de error, responde con código 500 y el mensaje de error
+        res.status(500).json({ message: error.message });
     }
 };
 
-exports.assingUsersToProject = async (req, res) => {
+// Controlador para obtener un proyecto por su ID
+const getProjectById = async (req, res) => {
     try {
-        const data = req.body;
-        const project = await projectService.assingUsersToProject(data);
-        res.status(200).json({ message: 'Usuarios asignados al proyecto con éxito', project });
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
-};
-
-exports.removeUserFromProject = async (req, res) => {
-    try {
-        const data = req.body;
-        const result = await projectService.removeUserFromProject(data);
-        res.status(200).json({ message: 'Usuario eliminado del proyecto con éxito', result });
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
-};
-
-// Controlador para obtener un proyecto por el id
-exports.getProjectById = async (req, res) => {
-    try {
-        const id = req.params.id;
-        const project = await projectService.getProjectById(id);
-        res.status(200).json({ message: 'Proyecto obtenido con éxito', project });
-    } catch (err) {
-        res.status(500).json({ message: err.message });
+        // Extrae el ID del proyecto de los parámetros de la solicitud
+        const projectId = req.params.id;
+        // Busca el proyecto usando el servicio
+        const project = await projectService.getProjectById(projectId);
+        // Si no se encuentra, responde con código 404
+        if (!project) {
+            return res.status(404).json({ message: 'Proyecto no encontrado' });
+        }
+        // Responde con código 200 y los detalles del proyecto
+        res.status(200).json(project);
+    } catch (error) {
+        // En caso de error, responde con código 500 y el mensaje de error
+        res.status(500).json({ message: error.message });
     }
 };
 
 // Controlador para actualizar un proyecto
-exports.updateProject = async (req, res) => {
+const updateProject = async (req, res) => {
     try {
-        const id = req.params.id;
-        const { nombre, descripcion, administrador_id } = req.body;
-        const project = await projectService.updateProject(id, nombre, descripcion, administrador_id);
-        res.status(200).json({ message: 'Proyecto actualizado con éxito', project });
-    } catch (err) {
-        res.status(500).json({ message: err.message });
+        // Extrae el ID del proyecto de los parámetros y los datos a actualizar del cuerpo
+        const projectId = req.params.id;
+        const { nombre, descripcion } = req.body;
+        // Actualiza el proyecto usando el servicio
+        const updatedProject = await projectService.updateProject(projectId, nombre, descripcion);
+        // Si no se encuentra, responde con código 404
+        if (!updatedProject) {
+            return res.status(404).json({ message: 'Proyecto no encontrado' });
+        }
+        // Responde con código 200 y los detalles del proyecto actualizado
+        res.status(200).json(updatedProject);
+    } catch (error) {
+        // En caso de error, responde con código 500 y el mensaje de error
+        res.status(500).json({ message: error.message });
     }
 };
 
 // Controlador para eliminar un proyecto
-exports.deleteProject = async (req, res) => {
+const deleteProject = async (req, res) => {
     try {
-        const id = req.params.id;
-        const result = await projectService.deleteProject(id);
-        res.status(200).json(result);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
+        // Extrae el ID del proyecto de los parámetros
+        const projectId = req.params.id;
+        // Elimina el proyecto usando el servicio
+        const deleted = await projectService.deleteProject(projectId);
+        // Si no se encuentra, responde con código 404
+        if (!deleted) {
+            return res.status(404).json({ message: 'Proyecto no encontrado' });
+        }
+        // Responde con código 200 y un mensaje de confirmación
+        res.status(200).json({ message: 'Proyecto eliminado' });
+    } catch (error) {
+        // En caso de error, responde con código 500 y el mensaje de error
+        res.status(500).json({ message: error.message });
     }
+};
+
+// Controlador para asignar usuarios a un proyecto
+const assignUsersToProject = async (req, res) => {
+    try {
+        // Extrae el ID del proyecto de los parámetros y los IDs de usuarios del cuerpo
+        const projectId = req.params.id;
+        const { userIds } = req.body;
+        // Asigna los usuarios al proyecto usando el servicio
+        const updatedProject = await projectService.assignUsersToProject(projectId, userIds);
+        // Responde con código 200 y los detalles del proyecto actualizado
+        res.status(200).json(updatedProject);
+    } catch (error) {
+        // En caso de error, responde con código 500 y el mensaje de error
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Controlador para remover un usuario de un proyecto
+const removeUserFromProject = async (req, res) => {
+    try {
+        // Extrae el ID del proyecto y el ID del usuario de los parámetros
+        const { id: projectId, userId } = req.params;
+        // Remueve al usuario del proyecto usando el servicio
+        const updatedProject = await projectService.removeUserFromProject(projectId, userId);
+        // Responde con código 200 y los detalles del proyecto actualizado
+        res.status(200).json(updatedProject);
+    } catch (error) {
+        // En caso de error, responde con código 500 y el mensaje de error
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Exporta todos los controladores como un módulo
+module.exports = {
+    createProject,
+    getAllProjects,
+    getProjectById,
+    updateProject,
+    deleteProject,
+    assignUsersToProject,
+    removeUserFromProject,
 };

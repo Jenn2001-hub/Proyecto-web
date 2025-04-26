@@ -1,61 +1,102 @@
-// Importar servicio de usuarios
-const userService = require('../services/user.service');
+// Importación del servicio de usuarios
+const userService = require('../services/user.service'); // Servicio que contiene la lógica para manejar usuarios
 
-// Controlador para crear nuevos usuarios
-exports.createUser = async (req, res) => {
-    try { 
-        const { nombre, email, password, rol_id, administrador_id } = req.body; // Se extrae los datos de la solicitud para el nuevo usuario
+// Controlador para crear un nuevo usuario
+const createUser = async (req, res) => {
+    try {
+        // Extrae los campos necesarios del cuerpo de la solicitud
+        const { nombre, email, password, rol_id, administrador_id } = req.body;
+        // Validación: verifica que los campos obligatorios estén presentes
+        if (!nombre || !email || !password || !rol_id) {
+            return res.status(400).json({ message: 'Faltan datos requeridos' }); // Respuesta de error si faltan datos
+        }
+        // Crea un nuevo usuario utilizando el servicio de usuarios
         const newUser = await userService.createUser(nombre, email, password, rol_id, administrador_id);
-        res.status(201).json({ message: 'Usuario creado con éxito', user: newUser }); // 281 para la creacion de nuevos ususarios
-    } catch (err) {
-        res.status(500).json({ message: err.message });
+        // Respuesta exitosa con los datos del nuevo usuario
+        res.status(201).json({ message: 'Usuario creado con éxito', user: newUser });
+    } catch (error) {
+        // Manejo de errores: devuelve el mensaje de error del servidor
+        res.status(500).json({ message: error.message });
     }
 };
 
-// Controlador para obtener todos los usuarios asociados a un administrador 
-// req que contiene los datos de la solicitud  y res que se utiliza para enviar las solicitudes
-exports.getAllUsersByAdministradorId = async (req, res) => {
+// Controlador para obtener todos los usuarios
+const getAllUsers = async (req, res) => {
     try {
-        const admin_from_token = req.user.id; // Se extrae el id del administrador del token de autenticación
-        const { email } = req.query; // Se extrae el email de la consulta para utilizarlo como tipo filtro y es opcional
-        const users = await userService.getAllUsersByAdministradorId(admin_from_token, email);
-        res.status(200).json({message: 'Usuarios consultados con éxito', users });
+        // Obtiene la lista de todos los usuarios utilizando el servicio de usuarios
+        const users = await userService.getAllUsers();
+        // Respuesta exitosa con la lista de usuarios
+        res.status(200).json(users);
     } catch (error) {
-        res.status(500).json({ message: 'Error al obtener los usuarios', error });
+        // Manejo de errores: devuelve el mensaje de error del servidor
+        res.status(500).json({ message: error.message });
     }
 };
 
-//  Controlador para obtener a los usuarios asociados a un rol
-exports.getAllUsersByRolId = async (req, res) => {
+// Controlador para obtener un usuario por su ID
+const getUserById = async (req, res) => {
     try {
-        const users = await userService.getAllUsersByRolId(req.params.id);
-        res.status(200).json({ message: 'Usuarios consultados con éxito', users });
+        // Extrae el ID del usuario desde los parámetros de la URL
+        const userId = req.params.id;
+        // Busca el usuario por ID utilizando el servicio de usuarios
+        const user = await userService.getUserById(userId);
+        // Validación: verifica si el usuario existe
+        if (!user) {
+            return res.status(404).json({ message: 'Usuario no encontrado' }); // Respuesta de error si no se encuentra
+        }
+        // Respuesta exitosa con los datos del usuario
+        res.status(200).json(user);
     } catch (error) {
-        res.status(500).json({ message: 'Error al obtener los usuarios', error });
+        // Manejo de errores: devuelve el mensaje de error del servidor
+        res.status(500).json({ message: error.message });
     }
 };
 
 // Controlador para actualizar un usuario
-exports.updateUser = async (req, res) => {
-    const { id } = req.params; // extrae el id de la URL enviado como parametro
-    const { nombre, email, rol_id, administrador_id } = req.body; // se extrae los datos actualizados 
-    const admin_from_token = req.user.id;
+const updateUser = async (req, res) => {
     try {
-        const user = await userService.updateUser(id, nombre, email, rol_id, administrador_id, admin_from_token);
-        res.status(200).json({ message: 'El susuario a actualizado con éxito', user });
-    } catch (err) {
-        res.status(500).json({ message: err.message });
+        // Extrae el ID del usuario desde los parámetros de la URL
+        const userId = req.params.id;
+        // Extrae los campos a actualizar del cuerpo de la solicitud
+        const { nombre, email, password, rol_id, administrador_id } = req.body;
+        // Actualiza el usuario utilizando el servicio de usuarios
+        const updatedUser = await userService.updateUser(userId, nombre, email, password, rol_id, administrador_id);
+        // Validación: verifica si el usuario existe
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'Usuario no encontrado' }); // Respuesta de error si no se encuentra
+        }
+        // Respuesta exitosa con los datos del usuario actualizado
+        res.status(200).json({ message: 'Usuario actualizado con éxito', user: updatedUser });
+    } catch (error) {
+        // Manejo de errores: devuelve el mensaje de error del servidor
+        res.status(500).json({ message: error.message });
     }
 };
 
 // Controlador para eliminar un usuario
-exports.deleteUser = async (req, res) => {
-    const { id } = req.params;
-    const admin_from_token = req.user.id;
+const deleteUser = async (req, res) => {
     try {
-        const result = await userService.deleteUser(id, admin_from_token);
-        res.status(200).json(result);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
+        // Extrae el ID del usuario desde los parámetros de la URL
+        const userId = req.params.id;
+        // Elimina el usuario utilizando el servicio de usuarios
+        const deletedUser = await userService.deleteUser(userId);
+        // Validación: verifica si el usuario existe
+        if (!deletedUser) {
+            return res.status(404).json({ message: 'Usuario no encontrado' }); // Respuesta de error si no se encuentra
+        }
+        // Respuesta exitosa confirmando la eliminación
+        res.status(200).json({ message: 'Usuario eliminado' });
+    } catch (error) {
+        // Manejo de errores: devuelve el mensaje de error del servidor
+        res.status(500).json({ message: error.message });
     }
+};
+
+// Exporta los controladores para su uso en otros módulos
+module.exports = {
+    createUser,
+    getAllUsers,
+    getUserById,
+    updateUser,
+    deleteUser,
 };

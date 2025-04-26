@@ -1,26 +1,47 @@
-// Importar funciones de datos de Sequelize y tambien la instancia que se hizo en el database.js
 const { DataTypes } = require('sequelize');
-const { sequelize } = require('../config/database');
+const sequelize = require('../config/db');
 
-// Se define el modelo de usuarios
+// define el modelo usuarios en la base de datos.
 const User = sequelize.define('usuarios', {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    nombre: { type: DataTypes.STRING, allowNull: false },
-    email: { type: DataTypes.STRING, allowNull: false, unique: true }, // "unique" que debe ser única :)
-    password: { type: DataTypes.STRING, allowNull: false },
+    id: { 
+        type: DataTypes.INTEGER,          
+        primaryKey: true, // clave primaria
+        autoIncrement: true               
+    },
+    nombre: { 
+        type: DataTypes.STRING,           
+        allowNull: false  // no permite valores nulos
+    },
+    email: { 
+        type: DataTypes.STRING,          
+        allowNull: false,                 
+        unique: true // debe ser unico en la tabla
+    },
+    password: { 
+        type: DataTypes.STRING,           
+        allowNull: false  // no permite valores nulos
+    },
     rol_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: { model: 'roles', key: 'id' }
+        type: DataTypes.INTEGER,          
+        allowNull: false,                 
+        references: {  // clave foranea
+            model: 'roles', // referencia a la tabla roles
+            key: 'id'  // referencia a la columna id
+        }
     },
     administrador_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: { model: 'usuarios', key: 'id'}
+        type: DataTypes.INTEGER,         
+        allowNull: true,    
+        field: 'administrador_id',              
+        references: {  // Clave foranea
+            model: 'usuarios', // referencia a la tabla usuarios
+            key: 'id' // referencia a la columna id
+        }
     }
 }, {
-    timestamps: false,
-    tableName: 'usuarios',
+    timestamps: false,                   
+    tableName: 'usuarios' // asigna el nombre a la tabla en la base de datos
 });
-// Exportamos el modelo de usuarios
-module.exports =  User;
+
+
+module.exports = User;

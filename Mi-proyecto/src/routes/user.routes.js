@@ -1,18 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const userController = require('../controllers/user.controller'); // Importamos el controlador de usuarios
-const { authenticateToken, checkRole } = require('../middlewares/auth.middleware');
-const ROLES = require('../utils/constants');
-const errorHandler = require('../middlewares/error.middleware');
+const userController = require('../controllers/user.controller');
+const { authenticateToken } = require('../middlewares/auth.middleware');
 
-// Rutas de solicitud para usuarios      //middleware para hacer autenticación y asi proteger las rutas
-router.post('/users/create', authenticateToken, checkRole([ROLES.ADMIN]), userController.createUser);
-router.put('/users/update/:id', authenticateToken, checkRole([ROLES.ADMIN]), userController.updateUser);
-router.get('/users', authenticateToken, checkRole([ROLES.ADMIN]), userController.getAllUsersByAdministradorId);
-router.delete('/users/delete/:id', authenticateToken, checkRole([ROLES.ADMIN]), userController.deleteUser);
-router.get('/users/rol/:id', authenticateToken, checkRole([ROLES.ADMIN]), userController.getAllUsersByRolId);
+// Define las rutas sin repetir "/users"
+router.post('/', authenticateToken, userController.createUser);      // POST /api/users
+router.get('/', authenticateToken, userController.getAllUsers);      // GET /api/users
+router.get('/:id', authenticateToken, userController.getUserById);   // GET /api/users/:id
+router.put('/:id', authenticateToken, userController.updateUser);    // PUT /api/users/:id
+router.delete('/:id', authenticateToken, userController.deleteUser); // DELETE /api/users/:id
 
-router.use(errorHandler);// Middleware para manejar errores
-
-// Exportamos el router para que se puedan utilizar las rutas que se hayan definido
 module.exports = router;

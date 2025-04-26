@@ -1,0 +1,131 @@
+{
+	"info": {
+		"_postman_id": "d655bade-d61d-4f82-bbee-bd9aefe3f158",
+		"name": "backend - gestion de proyectos",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "42348971"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"jawert@gmail.com\",\r\n  \"password\": \"jawert12345\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/auth/login",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Users",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJqYXdlcnRAZ21haWwuY29tIiwicm9sX2lkIjoxLCJpYXQiOjE3NDU1MjI2ODYsImV4cCI6MTc0NTUyNjI4Nn0.EU_zg_R_RQoI4ff8kNzuRhy8PmnoSSAkzj5zazY0mF8",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/users",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Project",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJqYXdlcnRAZ21haWwuY29tIiwicm9sX2lkIjoxLCJpYXQiOjE3NDU1MjQ4MjYsImV4cCI6MTc0NTUyODQyNn0.qf7Ie6gMMS_mN3lsjMxdoCGcJh3Eq5gaIYw6YuSzz8k",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"nombre\": \"Prueba\",\r\n  \"descripcion\": \"Descripción prueba\",\r\n  \"fecha_creacion\": \"2025-04-24\",\r\n  \"administrador_id\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/projects",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"projects"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Project Delete",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJqYXdlcnRpbXBhdGFAZ21haWwuY29tIiwicm9sX2lkIjoxLCJpYXQiOjE3NDU1MjU0NzYsImV4cCI6MTc0NTUyOTA3Nn0.c8LFeew-OnuXmIxdTXlRlsXBlTA_3aqtC6Gtv5mMD50",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/projects",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"projects"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Project",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Project",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	]
+}
