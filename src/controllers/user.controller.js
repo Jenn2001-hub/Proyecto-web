@@ -1,5 +1,5 @@
 // Importación del servicio de usuarios
-const userService = require('../services/user.service'); // Servicio que contiene la lógica para manejar usuarios
+const userService = require('./services/user.service'); // Servicio que contiene la lógica para manejar usuarios
 
 // Controlador para crear un nuevo usuario
 const createUser = async (req, res) => {

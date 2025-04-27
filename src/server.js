@@ -3,12 +3,12 @@ const dotenv = require('dotenv'); // Biblioteca para cargar variables de entorno
 const path = require('path'); // Módulo para manejar rutas de archivos
 
 // Carga las variables de entorno desde el archivo .env
-dotenv.config({ path: path.resolve(__dirname, '../../.env') }); // Resuelve la ruta al archivo .env
+dotenv.config({ path: path.resolve(__dirname, './.env') }); // Resuelve la ruta al archivo .env
 
 // Importación de configuraciones y modelos
-const sequelize = require('../config/db'); // Instancia de Sequelize para la conexión a la base de datos
+const sequelize = require('./config/db'); // Instancia de Sequelize para la conexión a la base de datos
 const app = require('./app'); // Aplicación Express configurada
-require('../models/associations'); // Carga las asociaciones entre modelos
+require('./models/associations'); // Carga las asociaciones entre modelos
 
 // Imprime las variables de entorno relacionadas con la base de datos para depuración
 console.log({

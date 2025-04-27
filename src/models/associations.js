@@ -1,6 +1,7 @@
 // Importa los modelos necesarios para establecer las relaciones entre tablas.
 //modelos usuario, proyecto y modelo de la tabla intermedia
-const User = require('./user.models');       
+const User = require('./user.models');  
+const Project = require('./project.model')     
 const Project = require('./rolePermission.model');        
 const UserProject = require('./userProject.model'); 
 

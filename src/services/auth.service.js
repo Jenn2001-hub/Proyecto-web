@@ -1,7 +1,7 @@
 // Importación de dependencias
 const bcrypt = require('bcrypt'); // Biblioteca para encriptar y comparar contraseñas
 const jwt = require('jsonwebtoken'); // Biblioteca para generar y verificar JSON Web Tokens
-const User = require('../models/user.models'); // Modelo de usuario para interactuar con la base de datos
+const User = require('./models/user.models'); // Modelo de usuario para interactuar con la base de datos
 
 // Imprime el modelo User en la consola para depuración
 console.log('Modelo User importado:', User); // Depuración

@@ -1,7 +1,7 @@
 // Importamos la biblioteca Express para crear rutas
 const express = require('express');
 const router = express.Router(); // Creamos una instancia de router para definir rutas
-const authController = require('../controllers/auth.controller'); // Importamos el controlador de autenticación
+const authController = require('./controllers/auth.controller'); // Importamos el controlador de autenticación
 
 
 // Ruta POST para iniciar sesión

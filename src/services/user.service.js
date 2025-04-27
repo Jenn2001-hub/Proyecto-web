@@ -1,5 +1,5 @@
 // Importación de dependencias
-const User = require('../models/user.models'); // Modelo para interactuar con la tabla de usuarios
+const User = require('./models/user.models'); // Modelo para interactuar con la tabla de usuarios
 const bcrypt = require('bcryptjs'); // Biblioteca para encriptar contraseñas
 
 // Función para crear un nuevo usuario

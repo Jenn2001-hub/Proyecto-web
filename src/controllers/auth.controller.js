@@ -1,6 +1,6 @@
 // Importación de los servicios necesarios
-const authService = require('../services/auth.service'); // Servicio para manejar la lógica de autenticación
-const userService = require('../services/user.service'); // Servicio para manejar la lógica de usuarios
+const authService = require('./services/auth.service'); // Servicio para manejar la lógica de autenticación
+const userService = require('./services/user.service'); // Servicio para manejar la lógica de usuarios
 
 // Controlador para el inicio de sesión
 exports.login = async (req, res) => {

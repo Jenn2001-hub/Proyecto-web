@@ -4,7 +4,7 @@ const dotenv = require('dotenv'); // Biblioteca para cargar variables de entorno
 const path = require('path'); // Módulo para manejar rutas de archivos
 
 // Carga las variables de entorno desde el archivo .env
-dotenv.config({ path: path.resolve(__dirname, '../../.env') }); // Resuelve la ruta al archivo .env
+dotenv.config({ path: path.resolve(__dirname, '././.env') }); // Resuelve la ruta al archivo .env
 
 // Obtiene la clave secreta para firmar/verificar JWT desde las variables de entorno
 const SECRET_KEY = process.env.JWT_SECRET;

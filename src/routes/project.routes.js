@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const projectController = require('../controllers/project.controller');
-const { authenticateToken } = require('../middlewares/auth.middleware');
+const projectController = require('./controllers/project.controller');
+const { authenticateToken } = require('./middlewares/auth.middleware');
 
 // Define las rutas sin repetir "/projects"
 router.post('/', authenticateToken, projectController.createProject);            // POST /api/projects

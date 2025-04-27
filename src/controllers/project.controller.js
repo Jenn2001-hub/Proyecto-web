@@ -1,5 +1,5 @@
 // Importa el servicio de proyectos
-const projectService = require('../services/project.service');
+const projectService = require('./services/project.service');
 
 // Controlador para crear un nuevo proyecto
 const createProject = async (req, res) => {

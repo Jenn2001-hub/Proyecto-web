@@ -1,7 +1,7 @@
 // Importación de modelos
-const Project = require('../models/project.model'); // Modelo para interactuar con la tabla de proyectos
-const User = require('../models/user.models'); // Modelo para interactuar con la tabla de usuarios
-const UserProject = require('../models/userProject.model'); // Modelo para la tabla de relación usuario-proyecto
+const Project = require('./models/project.model'); // Modelo para interactuar con la tabla de proyectos
+const User = require('./models/user.models'); // Modelo para interactuar con la tabla de usuarios
+const UserProject = require('./models/userProject.model'); // Modelo para la tabla de relación usuario-proyecto
 
 // Función para crear un nuevo proyecto
 exports.createProject = async (nombre, descripcion, administrador_id) => {

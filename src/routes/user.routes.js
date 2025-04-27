@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const userController = require('../controllers/user.controller');
-const { authenticateToken } = require('../middlewares/auth.middleware');
+const userController = require('./controllers/user.controller');
+const { authenticateToken } = require('./middlewares/auth.middleware');
 
 // Define las rutas sin repetir "/users"
 router.post('/', authenticateToken, userController.createUser);      // POST /api/users
