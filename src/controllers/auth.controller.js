@@ -12,11 +12,11 @@ exports.login = async (req, res) => {
 
     // Validación: verifica si el campo email está presente
     if (!email) {
-        return res.status(400).json({ message: 'Debe ' }); // Respuesta de error si falta email
+        return res.status(400).json({ message: 'Debe agregar su email' }); // Respuesta de error si falta email
     }
     // Validación: verifica si el campo password está presente
     if (!password) {
-        return res.status(400).json({ message: 'El campo password es requerido' }); // Respuesta de error si falta password
+        return res.status(400).json({ message: 'Debe ingresar la contrasena' }); // Respuesta de error si falta password
     }
 
     try {
@@ -42,7 +42,7 @@ exports.register = async (req, res) => {
         // Crea un nuevo usuario usando el servicio de usuarios
         const newUser = await userService.createUser(nombre, email, password, rol_id, administrador_id);
         // Respuesta exitosa con los datos del nuevo usuario
-        res.status(201).json({ message: 'Usuario registrado con éxito', user: newUser });
+        res.status(201).json({ message: 'Registro de usuario exitoso', user: newUser });
     } catch (err) {
         // Manejo de errores: devuelve un mensaje de error si falla el registro
         res.status(500).json({ message: err.message || 'Error al registrar el usuario' });
