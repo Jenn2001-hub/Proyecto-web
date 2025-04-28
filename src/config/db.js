@@ -1,8 +1,7 @@
 const { Sequelize } = require('sequelize');
-require('dotenv').config();
+const dotenv = require('dotenv')
 
-
-console.log('DB_PASSWORD:', process.env.DB_PASSWORD, 'Type:', typeof process.env.DB_PASSWORD);
+dotenv.config();
 // Crear una nueva instancia de Sequelize usando las variables de entorno
 const sequelize = new Sequelize(
   process.env.DB_NAME,

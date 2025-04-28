@@ -1,7 +1,5 @@
-// Importación de modelos
-const Project = require('./models/project.model'); // Modelo para interactuar con la tabla de proyectos
-const User = require('./models/user.models'); // Modelo para interactuar con la tabla de usuarios
-const UserProject = require('./models/userProject.model'); // Modelo para la tabla de relación usuario-proyecto
+const Project = require('../models/project.model'); // Modelo para interactuar con la tabla de proyectos
+const User = require('../models/user.model'); // Modelo para interactuar con la tabla de usuarios
 
 // Función para crear un nuevo proyecto
 exports.createProject = async (nombre, descripcion, administrador_id) => {
@@ -23,12 +21,13 @@ exports.createProject = async (nombre, descripcion, administrador_id) => {
 // Función para obtener todos los proyectos
 exports.getAllProjects = async () => {
     try {
-        // Obtiene todos los proyectos, incluyendo datos del administrador asociado
-        return await Project.findAll({
-            include: [{ model: User, as: 'administrador', attributes: ['id', 'nombre', 'email'] }]
+        const project = await Project.findAll({
+            include: [{model: User, as: 'administrador', attributes: ['id', 'nombre', 'email']},
+                {model: User, as: 'usuarios', attributes: ['id', 'nombre', 'email'], through: { attributes: [] }}
+            ]
         });
+        return project;
     } catch (err) {
-        // Lanza un error con el mensaje correspondiente si falla la obtención
         throw new Error(`Error al obtener los proyectos: ${err.message}`);
     }
 };
@@ -37,12 +36,13 @@ exports.getAllProjects = async () => {
 exports.getProjectById = async (id) => {
     try {
         // Busca un proyecto por su ID, incluyendo administrador y usuarios asignados
-        return await Project.findByPk(id, {
+        const project = await Project.findByPk(id, {
             include: [
                 { model: User, as: 'administrador', attributes: ['id', 'nombre', 'email'] },
                 { model: User, as: 'usuarios', attributes: ['id', 'nombre', 'email'] }
             ]
         });
+        return project;
     } catch (err) {
         // Lanza un error con el mensaje correspondiente si falla la obtención
         throw new Error(`Error al obtener el proyecto: ${err.message}`);
@@ -56,14 +56,11 @@ exports.updateProject = async (id, nombre, descripcion) => {
         const project = await Project.findByPk(id);
         // Validación: verifica si el proyecto existe
         if (!project) {
-            return null; // Retorna null si no se encuentra el proyecto
+            throw new Error('Poryecto no encontrado');
         }
-        // Actualiza los campos proporcionados (si existen)
-        if (nombre) project.nombre = nombre;
-        if (descripcion) project.descripcion = descripcion;
-        // Guarda los cambios en la base de datos
-        await project.save();
-        // Retorna el proyecto actualizado
+        // Actualiza el proyecto
+        await project.update({ nombre, descripcion, administrador_id});
+
         return project;
     } catch (err) {
         // Lanza un error con el mensaje correspondiente si falla la actualización
@@ -78,12 +75,12 @@ exports.deleteProject = async (id) => {
         const project = await Project.findByPk(id);
         // Validación: verifica si el proyecto existe
         if (!project) {
-            return null; // Retorna null si no se encuentra el proyecto
+            throw new Error('Proyecto no encontrado');
         }
         // Elimina el proyecto de la base de datos
         await project.destroy();
-        // Retorna true para indicar que la eliminación fue exitosa
-        return true;
+        // Indica que la eliminación fue exitosa
+        return { message: 'Proyecto eliminado con éxito' };
     } catch (err) {
         // Lanza un error con el mensaje correspondiente si falla la eliminación
         throw new Error(`Error al eliminar el proyecto: ${err.message}`);
@@ -91,43 +88,30 @@ exports.deleteProject = async (id) => {
 };
 
 // Función para asignar usuarios a un proyecto
-exports.assignUsersToProject = async (projectId, userIds) => {
-    try {
-        // Busca el proyecto por su ID
-        const project = await Project.findByPk(projectId);
-        // Validación: verifica si el proyecto existe
-        if (!project) {
-            throw new Error('Proyecto no encontrado'); // Lanza error si no se encuentra el proyecto
-        }
-        // Crea las relaciones usuario-proyecto en la tabla UserProject
-        await UserProject.bulkCreate(userIds.map(userId => ({ usuario_id: userId, proyecto_id: projectId })));
-        // Retorna el proyecto con los usuarios asignados actualizados
-        return await Project.findByPk(projectId, {
-            include: [{ model: User, as: 'usuarios', attributes: ['id', 'nombre', 'email'] }]
-        });
-    } catch (err) {
-        // Lanza un error con el mensaje correspondiente si falla la asignación
-        throw new Error(`Error al asignar usuarios al proyecto: ${err.message}`);
-    }
+exports.assingUsersToProject = async (data) => {
+    const project = await Project.findByPk(data.projectId);
+    if (!project) throw new Error('Proyecto no encontrado');
+    
+    const users = await User.findAll({ where: { id: data.userIds }});
+    if (users.length !== data.userIds.length) throw new Error('Algunos usuarios no fueron encontrados');
+
+    await project.addUsuarios(users);
+    return await project.reload({
+        include: [{model: User, as: 'usuarios', attributes: ['id', 'nombre', 'email'], through: { attributes: [] }}
+        ]
+    });
+    return project;
 };
 
 // Función para eliminar un usuario de un proyecto
-exports.removeUserFromProject = async (projectId, userId) => {
-    try {
-        // Busca el proyecto por su ID
-        const project = await Project.findByPk(projectId);
-        // Validación: verifica si el proyecto existe
-        if (!project) {
-            throw new Error('Proyecto no encontrado'); // Lanza error si no se encuentra el proyecto
-        }
-        // Elimina la relación usuario-proyecto de la tabla UserProject
-        await UserProject.destroy({ where: { usuario_id: userId, proyecto_id: projectId } });
-        // Retorna el proyecto con los usuarios actualizados
-        return await Project.findByPk(projectId, {
-            include: [{ model: User, as: 'usuarios', attributes: ['id', 'nombre', 'email'] }]
-        });
-    } catch (err) {
-        // Lanza un error con el mensaje correspondiente si falla la eliminación
-        throw new Error(`Error al eliminar usuario del proyecto: ${err.message}`);
-    }
+exports.removeUserFromProject = async (data) => {
+    const project = await Project.findByPk(data.projectId);
+    if (!project) 
+        throw new Error('Proyecto no encontrado'); // Verifica que el proyecto exista
+
+    const user = await User.findByPk(data.userId);
+    if (!user) 
+        throw new Error('Usuario no encontrado'); // Verifica que usuario exista
+
+    await project.removeUsuario(user); // Mediante el "removeUsuario" lo desasocia
 };

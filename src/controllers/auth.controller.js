@@ -1,11 +1,9 @@
 // Importación de los servicios necesarios
-const authService = require('./services/auth.service'); // Servicio para manejar la lógica de autenticación
-const userService = require('./services/user.service'); // Servicio para manejar la lógica de usuarios
+const authService = require('../services/auth.service'); // Servicio para manejar la lógica de autenticacion
+const userService = require('../services/user.service');
 
 // Controlador para el inicio de sesión
 exports.login = async (req, res) => {
-    // Imprime el cuerpo de la solicitud en la consola para depuración
-    console.log('Cuerpo de la solicitud:', req.body); 
 
     // Extrae los campos email y password del cuerpo de la solicitud
     const { email, password } = req.body;

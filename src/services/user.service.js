@@ -1,5 +1,5 @@
 // Importación de dependencias
-const User = require('./models/user.models'); // Modelo para interactuar con la tabla de usuarios
+const User = require('../models/user.model'); // Modelo para interactuar con la tabla de usuarios
 const bcrypt = require('bcryptjs'); // Biblioteca para encriptar contraseñas
 
 // Función para crear un nuevo usuario
@@ -29,45 +29,56 @@ exports.createUser = async (nombre, email, password, rol_id, administrador_id) =
     }
 };
 
-// Función para obtener todos los usuarios
-exports.getAllUsers = async () => {
+// Función para obtener todos los usuarios de un administrador
+exports.getAllUsersByAdministradorId = async (administrador_id, email) => {
     try {
-        // Obtiene todos los usuarios de la base de datos
-        return await User.findAll();
-    } catch (err) {
-        // Lanza un error con el mensaje correspondiente si falla la obtención
-        throw new Error(`Error al obtener los usuarios: ${err.message}`);
+         // whereClause para filtrar los usuarios
+        const whereClause = { administrador_id };
+        if (email) {
+            whereClause.email = email;
+        }
+        //busca los usuarios que cumplan con el whereClause
+        const users = await User.findAll({ where: whereClause, attributes: { exclude: ['password']}});
+        return users;
+    } catch {err} {
+        throw new Error(`Error al obtenernlos usuarios: ${err.message}`);
     }
 };
 
 // Función para obtener un usuario por su ID
-exports.getUserById = async (id) => {
+exports.getAllUsersByRolId = async (rol_id) => {
     try {
-        // Busca un usuario por su ID en la base de datos
-        return await User.findByPk(id);
+        const users = await User.findAll({ where: {rol_id}, attributes: { exclude: ['password']}});// se excluye la contraseña para no compromenter datos sensibles
+        return users;
     } catch (err) {
-        // Lanza un error con el mensaje correspondiente si falla la obtención
-        throw new Error(`Error al obtener el usuario: ${err.message}`);
+        throw new Error(`Error al obtener  los usuarios: ${err.message}`);
     }
 };
 
 // Función para actualizar un usuario
 exports.updateUser = async (id, nombre, email, password, rol_id, administrador_id) => {
     try {
-        // Busca el usuario por su ID
-        const user = await User.findByPk(id);
-        // Validación: verifica si el usuario existe
-        if (!user) {
-            return null; // Retorna null si no se encuentra el usuario
+        const user = await User.findByPk(id); // busca por id
+        if (user.administrador_id !== admin_from_token) {
+            throw new Error('Acceso denegado, este usuario no esta bajo su administración');
         }
-        // Actualiza los campos proporcionados (si existen)
-        if (nombre) user.nombre = nombre;
-        if (email) user.email = email;
-        // Encripta la nueva contraseña si se proporciona
-        if (password) user.password = await bcrypt.hash(password, 10);
-        if (rol_id) user.rol_id = rol_id;
-        // Actualiza administrador_id si se proporciona (incluye null)
-        if (administrador_id !== undefined) user.administrador_id = administrador_id;
+
+        if (!user) {
+            throw new Error('Usuario no encontrado');
+        }
+
+        if (email && email !== user.email) { // verifica si el email es el mismo que tenia 
+            const userExists = await User.findOne({ where: { email } });
+            if (userExists) {
+                throw new Error('El email ya esta en uso');
+            }
+        }
+        await user.update({
+            nombre,
+            email,
+            rol_id,
+            administrador_id
+        });
         // Guarda los cambios en la base de datos
         await user.save();
         // Retorna el usuario actualizado
@@ -83,9 +94,12 @@ exports.deleteUser = async (id) => {
     try {
         // Busca el usuario por su ID
         const user = await User.findByPk(id);
-        // Validación: verifica si el usuario existe
+        if (user.administrador_id !== admin_from_token) { //primero verifica que si pueda eliminarlo
+            throw new Error('Acceso denegado, este ususario no esta bajo su administración');
+        }
+        //Verifica que el usuario exista
         if (!user) {
-            return null; // Retorna null si no se encuentra el usuario
+            throw new Error('Usuario no encontrado');
         }
         // Elimina el usuario de la base de datos
         await user.destroy();

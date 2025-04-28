@@ -1,39 +1,21 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('./config/db');
-const User = require('./user.models');
+const sequelize = require('../config/db');
 
 // Define el modelo proyectos en la base de datos
-const Proyect = sequelize.define('proyects', {
-    id: { 
-        type: DataTypes.INTEGER,          
-        primaryKey: true, // Clave primaria
-        autoIncrement: true               
-    },
-    nombre: { 
-        type: DataTypes.STRING,           
-        allowNull: false                  
-    },
-    descripcion: { 
-        type: DataTypes.STRING,           
-        allowNull: false                  
-    },
-    fecha_creacion: {
-        type: DataTypes.DATE,             
-        allowNull: false,                 
-        defaultValue: DataTypes.NOW // Valor predeterminado, fecha y hora actual
-    },
+const Project = sequelize.define('proyectos', {
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    nombre: { type: DataTypes.STRING, allowNull: false }, // EL "allowNull" es para indicar si la columna es nula o no, en este caso no puede ser nula
+    descripcion: { type: DataTypes.STRING, allowNull: false }, 
+    fecha_creacion: { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW }, // "defaultValue" se establece automaticamente al momento de crearla
     administrador_id: {
-        type: DataTypes.INTEGER,         
-        allowNull: false, 
-        field: 'administrador_id',            
-        references: {  // Clave foranea
-            model: User, // Referencia al modelo 'User'
-            key: 'id' // Referencia a la columna 'id'
-        }
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: { model: 'usuarios', key: 'id' } 
     }
 }, {
     timestamps: false,                    
-    tableName: 'proyectos',               // asigna el nombre de la tabla en la base de datos
+    tableName: 'proyectos', // especificar el nombre de la tabla en la base de datos 
+    underscored:true, //para usar columnas con guion bajo
     hooks: {
         afterCreate: (project, options) => { // Hook que se ejecuta despues de crear un proyecto
             if (project.fecha_creacion) {    // Ajusta la zona horaria restando 5 horas
@@ -43,4 +25,4 @@ const Proyect = sequelize.define('proyects', {
     }
 });
 
-module.exports = Proyect;
+module.exports = Project;

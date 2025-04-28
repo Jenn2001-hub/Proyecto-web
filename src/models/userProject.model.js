@@ -1,23 +1,13 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('./config/db');
+const sequelize = require('../config/db');
 
 // Define el modelo usuarios_proyectos en la base de datos
 const userProject = sequelize.define('usuarios_proyectos', {
-    usuario_id: {
-        type: DataTypes.INTEGER,          
-        allowNull: false,                 
-        references: {  // Clave fornea
-            model: 'usuarios', // Referencia a lab abla usuarios
-            key: 'id' // Referencia a la columna id
-        }
+    usuario_id: {type: DataTypes.INTEGER, allowNull: false,                 
+        references: { model: 'usuarios', key: 'id' }
     },
-    proyecto_id: {
-        type: DataTypes.INTEGER,          
-        allowNull: false,                 
-        references: {                     
-            model: 'proyectos', // Referencia a la tabla proyectos
-            key: 'id'  // Referencia a la columna id
-        }
+    proyecto_id: {type: DataTypes.INTEGER, allowNull: false,                 
+        references: { model: 'proyectos', key: 'id'}
     }
 }, {
     timestamps: false, 
