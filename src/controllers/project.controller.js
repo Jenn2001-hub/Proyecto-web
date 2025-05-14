@@ -27,7 +27,10 @@ exports.getAllProjects = async (req, res) => {
 // Controlador para obtener un proyecto por su ID
 exports.getProjectById = async (req, res) => {
     try {
-        const id = req.params.id;
+        const id = parseInt(req.params.id);
+        if (isNaN(id)) {
+            return res.status(400).json({ message: 'ID inválido' });
+        }
         const {nombre, descripcion, administrador_id}= req.body;
         const project = await projectService.updateProject(id, nombre, descripcion, administrador_id);
         return res.status(200).json({ message: 'Proyecto actualizado con exito', project });
@@ -40,7 +43,10 @@ exports.getProjectById = async (req, res) => {
 // Controlador para actualizar un proyecto
 exports.updateProject = async (req, res) => {
     try {
-        const id = req.params.id;
+        const id = parseInt(req.params.id);
+        if (isNaN(id)) {
+            return res.status(400).json({ message: 'ID inválido' });
+        }
         const { nombre, descripcion, administrador_id } = req.body;
         const project = await projectService.updateProject(id, nombre, descripcion, administrador_id);
         res.status(200).json({ message: 'Proyecto actualizado con éxito', project });
@@ -53,7 +59,10 @@ exports.updateProject = async (req, res) => {
 // Controlador para eliminar un proyecto
 exports.deleteProject = async (req, res) => {
     try {
-        const id = req.params.id;
+        const id = parseInt(req.params.id);
+        if (isNaN(id)) {
+            return res.status(400).json({ message: 'ID inválido' });
+        }
         const deleted = await projectService.deleteProject(id);
         res.status(200).json({ message: 'Proyecto eliminado', deleted });
     } catch (error) {

@@ -19,7 +19,7 @@ exports.createUser = async (req, res) => {
 exports.getAllUsersByAdministradorId = async (req, res) => {
     try {
         const admin_from_token = req.user.id; // Se extrae el id del administrador del token de autenticación
-        const users = await userService.getAllUsersByAdministradorId(admin_from_token, email);
+        const users = await userService.getAllUsersByAdministradorId(admin_from_token);
         res.status(200).json( users );
     } catch (error) {
         // Manejo de errores: devuelve el mensaje de error del servidor
@@ -39,7 +39,10 @@ exports.getAllUsersByRolId = async (req, res) => {
 
 // Controlador para actualizar un usuario
 exports.updateUser = async (req, res) => {
-        const id = req.params;
+        const id = parseInt(req.params.id);
+        if (isNaN(id)) {
+            return res.status(400).json({ message: 'ID inválido' });
+        }
         const { nombre, email, rol_id, administrador_id } = req.body;
         const admin_from_token = req.user.id;
     try {

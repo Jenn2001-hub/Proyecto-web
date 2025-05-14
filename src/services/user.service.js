@@ -56,38 +56,39 @@ exports.getAllUsersByRolId = async (rol_id) => {
 };
 
 // Función para actualizar un usuario
-exports.updateUser = async (id, nombre, email, password, rol_id, administrador_id) => {
+exports.updateUser = async (id, nombre, email, password, rol_id, administrador_id, admin_from_token) => {
     try {
-        const user = await User.findByPk(id); // busca por id
-        if (user.administrador_id !== admin_from_token) {
-            throw new Error('Acceso denegado, este usuario no esta bajo su administración');
-        }
-
+        const user = await User.findByPk(id);
+        
         if (!user) {
             throw new Error('Usuario no encontrado');
         }
 
-        if (email && email !== user.email) { // verifica si el email es el mismo que tenia 
+        if (user.administrador_id !== admin_from_token) {
+            throw new Error('Acceso denegado, este usuario no está bajo su administración');
+        }
+
+        if (email && email !== user.email) {
             const userExists = await User.findOne({ where: { email } });
             if (userExists) {
-                throw new Error('El email ya esta en uso');
+                throw new Error('El email ya está en uso');
             }
         }
+
         await user.update({
             nombre,
             email,
             rol_id,
             administrador_id
         });
-        // Guarda los cambios en la base de datos
+
         await user.save();
-        // Retorna el usuario actualizado
         return user;
     } catch (err) {
-        // Lanza un error con el mensaje correspondiente si falla la actualización
         throw new Error(`Error al actualizar el usuario: ${err.message}`);
     }
 };
+
 
 // Función para eliminar un usuario
 exports.deleteUser = async (id) => {

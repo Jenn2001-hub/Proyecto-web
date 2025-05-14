@@ -14,7 +14,7 @@ app.use(cors());
 // Definir las rutas de la API
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
-app.use('/api/projects', projectRoutes);
+app.use('/api/project', projectRoutes);
 
 // Ruta por defecto para la raíz
 app.get('/', (req, res) => {

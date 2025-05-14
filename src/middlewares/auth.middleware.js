@@ -8,7 +8,7 @@ const SECRET_KEY = process.env.JWT_SECRET;
 // Middleware para autenticar tokens JWT
 const authenticateToken = (req, res, next) => {
     console.log('Middleware authenticateToken ejecutado'); // Depuración
-    const token = req.header('Authorization')?.split(' ')[1];
+    const token = req.header('Authorization') && req.header('Authorization').replace('Bearer ', '');
 
     if (!token) {
         console.log('No se proporcionó token'); // Depuración
@@ -26,23 +26,7 @@ const authenticateToken = (req, res, next) => {
     });
 };
 
-// Middleware para verificar roles de usuario
-const checkRole = (roles) => {
-    // Retorna una función middleware que recibe una lista de roles permitidos
-    return (req, res, next) => {
-        // Extrae el rol_id del usuario desde los datos decodificados del token
-        const { rol_id } = req.user;
-        // Validación: verifica si el rol del usuario está en la lista de roles permitidos
-        if (!roles.includes(rol_id)) {
-            return res.status(403).json({ message: 'Acceso denegado, no tienes permisos para realizar esta acción' }); // Respuesta de error si el rol no está autorizado
-        }
-        // Pasa al siguiente middleware o controlador
-        next();
-    };
-};
-
 // Exporta los middlewares para su uso
 module.exports = {
     authenticateToken,
-    checkRole,
 };
