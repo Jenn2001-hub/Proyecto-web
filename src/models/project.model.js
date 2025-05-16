@@ -7,11 +7,6 @@ const Project = sequelize.define('proyectos', {
     nombre: { type: DataTypes.STRING, allowNull: false }, // EL "allowNull" es para indicar si la columna es nula o no, en este caso no puede ser nula
     descripcion: { type: DataTypes.STRING, allowNull: false }, 
     fecha_creacion: { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW }, // "defaultValue" se establece automaticamente al momento de crearla
-    administrador_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: { model: 'usuarios', key: 'id' } 
-    }
 }, {
     timestamps: false,                    
     tableName: 'proyectos', // especificar el nombre de la tabla en la base de datos 

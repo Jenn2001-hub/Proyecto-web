@@ -19,7 +19,6 @@ exports.createUser = async (nombre, email, password, rol_id, administrador_id) =
             email,
             password: hashedPassword,
             rol_id,
-            administrador_id
         });
         // Retorna el usuario creado
         return newUser;
@@ -56,16 +55,12 @@ exports.getAllUsersByRolId = async (rol_id) => {
 };
 
 // Función para actualizar un usuario
-exports.updateUser = async (id, nombre, email, password, rol_id, administrador_id, admin_from_token) => {
+exports.updateUser = async (id, nombre, email, rol_id) => {
     try {
         const user = await User.findByPk(id);
         
         if (!user) {
             throw new Error('Usuario no encontrado');
-        }
-
-        if (user.administrador_id !== admin_from_token) {
-            throw new Error('Acceso denegado, este usuario no está bajo su administración');
         }
 
         if (email && email !== user.email) {
@@ -78,11 +73,9 @@ exports.updateUser = async (id, nombre, email, password, rol_id, administrador_i
         await user.update({
             nombre,
             email,
-            rol_id,
-            administrador_id
+            rol_id
         });
 
-        await user.save();
         return user;
     } catch (err) {
         throw new Error(`Error al actualizar el usuario: ${err.message}`);
@@ -91,23 +84,32 @@ exports.updateUser = async (id, nombre, email, password, rol_id, administrador_i
 
 
 // Función para eliminar un usuario
-exports.deleteUser = async (id) => {
+exports.deleteUser = async (userId) => { // Exportamos la función deleteUser
     try {
-        // Busca el usuario por su ID
-        const user = await User.findByPk(id);
-        if (user.administrador_id !== admin_from_token) { //primero verifica que si pueda eliminarlo
-            throw new Error('Acceso denegado, este ususario no esta bajo su administración');
+        const user = await User.findByPk(userId); // Buscamos el usuario por su ID
+        
+        if (!user) { // Si no existe...
+            throw new Error('Usuario no encontrado'); // Lanzamos un error
         }
-        //Verifica que el usuario exista
-        if (!user) {
-            throw new Error('Usuario no encontrado');
-        }
-        // Elimina el usuario de la base de datos
-        await user.destroy();
-        // Retorna true para indicar que la eliminación fue exitosa
-        return true;
+
+        await user.destroy(); // Eliminamos el usuario
+        return { 
+            success: true, // Indicamos que todo salió bien
+            message: 'Usuario eliminado con éxito' 
+        };
+
     } catch (err) {
-        // Lanza un error con el mensaje correspondiente si falla la eliminación
-        throw new Error(`Error al eliminar el usuario: ${err.message}`);
+        throw new Error(`Error al eliminar el usuario: ${err.message}`); // Lanzamos un error si algo falla
     }
+};
+
+exports.getUserById = async (userId) => { 
+    const user = await User.findByPk(userId, { 
+        attributes: ['id', 'nombre', 'email', 'rol_id'], 
+        raw: true
+    });
+    if (!user) { 
+        throw new Error("Usuario no encontrado"); 
+    }
+    return user; 
 };

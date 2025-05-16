@@ -9,17 +9,16 @@ const app = express();
 
 // Middleware para parsear JSON (debe estar antes de las rutas)
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:4200', 
+  methods: ['GET', 'POST', 'PUT', 'DELETE']  
+}));
+
 
 // Definir las rutas de la API
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/project', projectRoutes);
-
-// Ruta por defecto para la raíz
-app.get('/', (req, res) => {
-  res.status(200).json('Bienvenido a la API de Gestión de Proyectos');
-});
 
 // manejo de errores
 app.use(errorHandler);

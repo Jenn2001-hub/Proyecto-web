@@ -2,13 +2,12 @@ const Project = require('../models/project.model'); // Modelo para interactuar c
 const User = require('../models/user.model'); // Modelo para interactuar con la tabla de usuarios
 
 // Función para crear un nuevo proyecto
-exports.createProject = async (nombre, descripcion, administrador_id) => {
+exports.createProject = async (nombre, descripcion) => {
     try {
         // Crea un nuevo proyecto en la base de datos con los datos proporcionados
         const newProject = await Project.create({
             nombre,
             descripcion,
-            administrador_id
         });
         // Retorna el proyecto creado
         return newProject;
@@ -35,16 +34,12 @@ exports.getAllProjects = async () => {
 // Función para obtener un proyecto por su ID
 exports.getProjectById = async (id) => {
     try {
-        // Busca un proyecto por su ID, incluyendo administrador y usuarios asignados
-        const project = await Project.findByPk(id, {
-            include: [
-                { model: User, as: 'administrador', attributes: ['id', 'nombre', 'email'] },
-                { model: User, as: 'usuarios', attributes: ['id', 'nombre', 'email'] }
-            ]
-        });
-        return project;
+        const project = await Project.findByPk(id); // Buscamos el proyecto por ID
+        if (!project) {
+            throw new Error('Proyecto no encontrado'); // Si no existe, lanzamos error
+        }
+        return project; // Devolvemos el proyecto encontrado
     } catch (err) {
-        // Lanza un error con el mensaje correspondiente si falla la obtención
         throw new Error(`Error al obtener el proyecto: ${err.message}`);
     }
 };
@@ -96,11 +91,9 @@ exports.assingUsersToProject = async (data) => {
     if (users.length !== data.userIds.length) throw new Error('Algunos usuarios no fueron encontrados');
 
     await project.addUsuarios(users);
-    return await project.reload({
-        include: [{model: User, as: 'usuarios', attributes: ['id', 'nombre', 'email'], through: { attributes: [] }}
-        ]
+    return await project.findByPk(data.project, {
+        include: [{model: User, as: 'usuarios', attributes: ['id', 'nombre', 'email'], through: { attributes: [] }}]
     });
-    return project;
 };
 
 // Función para eliminar un usuario de un proyecto

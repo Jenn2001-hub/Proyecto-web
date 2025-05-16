@@ -1,30 +1,16 @@
 // Importación de los servicios necesarios
 const authService = require('../services/auth.service'); // Servicio para manejar la lógica de autenticacion
-const userService = require('../services/user.service');
 
 // Controlador para el inicio de sesión
 exports.login = async (req, res) => {
-
-    // Extrae los campos email y password del cuerpo de la solicitud
     const { email, password } = req.body;
-
-    // Validación: verifica si el campo email está presente
-    if (!email) {
-        return res.status(400).json({ message: 'Debe agregar su email' }); // Respuesta de error si falta email
-    }
-    // Validación: verifica si el campo password está presente
-    if (!password) {
-        return res.status(400).json({ message: 'Debe ingresar la contrasena' }); // Respuesta de error si falta password
-    }
-
     try {
-        // Intenta autenticar al usuario usando el servicio de autenticación
-        const token = await authService.loginUser(email, password); // Genera un token si las credenciales son válidas
-        // Respuesta exitosa con el token
-        res.status(200).json({ message: 'Inicio de sesión exitoso', token });
+        const token = await authService.loginUser(email, password);
+        console.log(token)
+        res.status(200).json({ message: 'inicio de sesión exitoso', token });
     } catch (err) {
-        // Manejo de errores: devuelve un mensaje de error si falla la autenticación
-        res.status(400).json({ message: err.message || 'Error al iniciar sesión' });
+        console.log(err);
+        res.status(400).json({ message: err.message });
     }
 };
 

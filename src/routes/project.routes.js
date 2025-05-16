@@ -1,17 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const projectController = require('../controllers/project.controller');
-const { authenticateToken } = require('../middlewares/auth.middleware');
+const ROLES = require('../utils/constants');
+const { authenticateToken, checkRole } = require('../middlewares/auth.middleware');
 
 // Define las rutas sin repetir "/projects"
-router.post('/create', authenticateToken, projectController.createProject); // POST /api/projects
-router.get('/', authenticateToken, projectController.getAllProjects);  // GET /api/projects
-router.get(':id', authenticateToken, projectController.getProjectById);  // GET /api/projects/:id
-router.put('/update/:id', authenticateToken, projectController.updateProject); // PUT /api/projects/:id
-router.delete('/delete/:id', authenticateToken, projectController.deleteProject); // DELETE /api/projects/:id
+router.post('/projects/create', projectController.createProject); // Crea un nuevo proyecto, sin necesidad de token ni verificación de rol (actualmente está libre).
+router.put('/projects/update/:id', authenticateToken, checkRole([ROLES.ADMIN]), projectController.updateProject); 
+router.get('/projects', authenticateToken, checkRole([ROLES.ADMIN]), projectController.getAllProjects); 
+router.delete('/projects/delete/:id', authenticateToken, checkRole([ROLES.ADMIN]), projectController.deleteProject); 
+router.get('/projects/:id', authenticateToken, checkRole([ROLES.ADMIN]), projectController.getProjectById); 
 
-router.post('/associate', authenticateToken, projectController.assingUsersToProject); // POST /api/projects/:id/users
-router.delete('/disassociate', authenticateToken, projectController.removeUserFromProject); // DELETE /api/projects/:id/users/:userId
+router.post('/projects/associate', authenticateToken, checkRole([ROLES.ADMIN]), projectController.assingUsersToProject);
+router.delete('/projects/disassociate', authenticateToken, checkRole([ROLES.ADMIN]), projectController.removeUserFromProject);
 
 //Exportamos el router para usar las rutas definidas
 module.exports = router;
