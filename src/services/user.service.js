@@ -1,6 +1,7 @@
 // Importación de dependencias
 const User = require('../models/user.model'); // Modelo para interactuar con la tabla de usuarios
 const bcrypt = require('bcryptjs'); // Biblioteca para encriptar contraseñas
+const Role = require('../models/role');
 
 // Función para crear un nuevo usuario
 exports.createUser = async (nombre, email, password, rol_id, administrador_id) => {

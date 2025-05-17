@@ -3,6 +3,7 @@ const userService = require('../services/user.service'); // Servicio que maneja 
 const Project = require('../models/project.model'); // Modelo de proyectos
 const User = require('../models/user.model'); // Modelo de usuarios
 const bcrypt = require('bcrypt'); // Librería para encriptar contraseñas
+const Role = require('../models/role');
 
 // Función para crear un nuevo usuario en la base de datos
 exports.createUser = async (req, res) => {

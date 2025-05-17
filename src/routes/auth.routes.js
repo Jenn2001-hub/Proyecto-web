@@ -11,7 +11,7 @@ const ROLES = require('../utils/constants');
 // se define la ruta POST para poder probar enviando informacion, en este caso email y contraseña
 router.post('/login', authController.login);
 router.post('/register', authController.register);
-
+router.get('/me', authenticateToken, authController.getCurrentUser);
 
 // Exportamos el router para que se puedan utilizar las rutas  que se definió
 module.exports = router;

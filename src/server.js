@@ -2,6 +2,8 @@
 const sequelize = require('./config/db');
 const app = require('./app');
 const dotenv = require('dotenv'); // cargar variables de entorno
+const User = require('./models/user.model');
+const Role = require('./models/role');
 
 dotenv.config();
 require('./models/associations'); // Carga las asociaciones entre modelos

@@ -7,12 +7,13 @@ const errorHandler = require('../middlewares/error.middleware');
 
 
 // Define las rutas sin repetir "/users"
-router.post('/users/create', userController.createUser);
-router.put('/users/update/:id', authenticateToken, checkRole([ROLES.ADMIN]), userController.updateUser);
-router.get('/users/:id', authenticateToken, checkRole([ROLES.ADMIN]), userController.getUserById); 
-router.get('/users', authenticateToken, checkRole([ROLES.ADMIN]), userController.getAllUsersByAdministradorId);
-router.delete('/users/delete/:id', authenticateToken, checkRole([ROLES.ADMIN]), userController.deleteUser);
-router.get('/users/rol/:id', authenticateToken, checkRole([ROLES.ADMIN]), userController.getAllUsersByRolId);
+router.post('/create', userController.createUser);
+router.get('/', userController.getAllUsers);
+router.put('/update/:id', authenticateToken, checkRole([ROLES.ADMIN]), userController.updateUser);
+router.get('/:id', authenticateToken, checkRole([ROLES.ADMIN]), userController.getUserById); 
+router.get('/', authenticateToken, checkRole([ROLES.ADMIN]), userController.getAllUsersByAdministradorId);
+router.delete('delete/:id', authenticateToken, checkRole([ROLES.ADMIN]), userController.deleteUser);
+router.get('/rol/:id', authenticateToken, checkRole([ROLES.ADMIN]), userController.getAllUsersByRolId);
 
 router.use(errorHandler);// Manejo de errores
 

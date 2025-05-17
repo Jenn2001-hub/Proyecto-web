@@ -16,9 +16,9 @@ app.use(cors({
 
 
 // Definir las rutas de la API
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/project', projectRoutes);
+app.use('/auth', authRoutes);
+app.use('/users', userRoutes);
+app.use('/project', projectRoutes);
 
 // manejo de errores
 app.use(errorHandler);

@@ -6,4 +6,4 @@ const errorHandler = (err, req, res, next) => {
 
 module.exports = errorHandler;
 
-// https:localhost:3000/api/auth/login
+// https:localhost:3000/auth/login
