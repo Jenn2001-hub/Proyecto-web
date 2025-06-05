@@ -2,7 +2,8 @@
 const authService = require('../services/auth.service'); // Servicio para manejar la lógica de autenticacion
 const User = require('../models/user.model');
 const Role = require('../models/role');
-
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 // Controlador para el inicio de sesión
 exports.login = async (req, res) => {

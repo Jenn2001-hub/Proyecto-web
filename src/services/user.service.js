@@ -40,7 +40,7 @@ exports.getAllUsersByAdministradorId = async (administrador_id, email) => {
         //busca los usuarios que cumplan con el whereClause
         const users = await User.findAll({ where: whereClause, attributes: { exclude: ['password']}});
         return users;
-    } catch {err} {
+    } catch (err) {
         throw new Error(`Error al obtenernlos usuarios: ${err.message}`);
     }
 };

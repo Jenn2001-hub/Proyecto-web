@@ -7,7 +7,7 @@ const UserProject = require('./userProject.model');
 User.belongsToMany(Project, {
     through: UserProject, // Tabla intermedia
     foreignkey: 'usuario_id', // Clave foranea en la tabla intermedia 
-    as: 'proyectos' // nombre para acceder a los proyectos de un usuario
+    as: 'proyectos' 
 });
 
 Project.belongsToMany(User, {

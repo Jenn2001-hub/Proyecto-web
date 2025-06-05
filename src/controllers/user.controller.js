@@ -2,13 +2,14 @@
 const userService = require('../services/user.service'); // Servicio que maneja las operaciones de usuarios en la base de datos
 const Project = require('../models/project.model'); // Modelo de proyectos
 const User = require('../models/user.model'); // Modelo de usuarios
-const bcrypt = require('bcrypt'); // Librería para encriptar contraseñas
+const bcrypt = require('bcryptjs'); // Librería para encriptar contraseñas
 const Role = require('../models/role');
+
 
 // Función para crear un nuevo usuario en la base de datos
 exports.createUser = async (req, res) => {
     try { 
-        const { nombre, email, password, rol_id} = req.body; // Obtiene los datos del usuario desde la solicitud
+        const { nombre, email, password, rol_id } = req.body; // Obtiene los datos del usuario desde la solicitud
         console.log(req.body); // Muestra los datos en consola para depuración
         const newUser = await userService.createUser(nombre, email, password, rol_id); // Llama al servicio para crear el usuario
         res.status(201).json({ message: 'Usuario creado con éxito', user: newUser }); // Responde con el usuario creado

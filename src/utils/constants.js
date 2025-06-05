@@ -1,6 +1,7 @@
-const ROLES = { 
-    ADMIN: 1, 
-    user: 2, 
+// ../utils/constants.js
+const ROLES = {
+  ADMIN: 1,
+  USER: 2,
 };
 
-module.exports = ROLES; 
+module.exports = { ROLES }; // Exporta el objeto ROLES completo

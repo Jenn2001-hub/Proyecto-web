@@ -8,7 +8,6 @@ const Role = require('./models/role');
 dotenv.config();
 require('./models/associations'); // Carga las asociaciones entre modelos
 
-// Define el puerto del servidor, usa BACKEND_PORT o 3000 por defecto
 const PORT = process.env.PORT || 3000;
 
 sequelize.authenticate()

@@ -2,7 +2,6 @@ const jwt = require('jsonwebtoken'); // Biblioteca para manejar JSON Web Tokens
 const dotenv = require('dotenv'); // Biblioteca para cargar variables de entorno
 dotenv.config(); 
 
-// Obtiene la clave secreta para firmar/verificar JWT desde las variables de entorno
 const SECRET_KEY = process.env.JWT_SECRET;
 
 // Middleware para autenticar tokens JWT
@@ -27,8 +26,7 @@ const authenticateToken = (req, res, next) => {
 const checkRole = (roles) => {
     return (req, res, next) => {
         const { rol_id } = req.user; // Extraemos el rol del token decodificado
-        console.log(`Rol del usuario: ${rol_id}`); // Depuración
-        console.log(`Roles permitidos: ${roles}`);
+
         if (!roles.includes(rol_id)) { // Comprobamos si el rol está permitido
             return res.status(403).json({ message: 'Acceso denegado, no tienes permiso para realizar esta acción' });
         }
