@@ -2,8 +2,6 @@
 const sequelize = require('./config/db');
 const app = require('./app');
 const dotenv = require('dotenv'); // cargar variables de entorno
-const User = require('./models/user.model');
-const Role = require('./models/role');
 
 dotenv.config();
 require('./models/associations'); // Carga las asociaciones entre modelos
@@ -14,7 +12,7 @@ sequelize.authenticate()
     .then(() => {
         console.log('Conectado a PostgreSQL con Sequalize');
         app.listen(PORT, () => {
-            console.log('Servidor corriendo en http://localhost:3000');
+            console.log('Servidor corriendo en http://localhost:${PORT}');
         });
     })
     .catch(err => console.error('Error conectando a la base de datos:', err));

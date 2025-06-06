@@ -1,29 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const userController = require('../controllers/user.controller');
+const userController = require('../controllers/user.controller'); // Importamos el controlador de usuarios
 const { authenticateToken, checkRole } = require('../middlewares/auth.middleware');
 const ROLES = require('../utils/constants');
 const errorHandler = require('../middlewares/error.middleware');
 
-// Ruta para crear usuario (sin token)
+// Rutas de solicitud para usuarios      //middleware para hacer autenticación y asi proteger las rutas
 router.post('/create', userController.createUser);
-
-// Obtener usuarios por rol (ADMIN) — debe ir antes que '/:id'
+router.put('update/:id', authenticateToken, checkRole([ROLES.ADMIN]), userController.updateUser);
+router.get('/', authenticateToken, checkRole([ROLES.ADMIN]), userController.getAllUsersByAdministradorId);
+router.delete('/delete/:id', authenticateToken, checkRole([ROLES.ADMIN]), userController.deleteUser);
 router.get('/rol/:id', authenticateToken, checkRole([ROLES.ADMIN]), userController.getAllUsersByRolId);
 
-// Obtener todos los usuarios (restringido a ADMIN)
-router.get('/', authenticateToken, checkRole([ROLES.ADMIN]), userController.getAllUsersByAdministradorId);
+router.use(errorHandler);// Middleware para manejar errores
 
-// Obtener usuario por id (ADMIN)
-router.get('/:id', authenticateToken, checkRole([ROLES.ADMIN]), userController.getUserById);
-
-// Actualizar usuario (ADMIN)
-router.put('/update/:id', authenticateToken, checkRole([ROLES.ADMIN]), userController.updateUser);
-
-// Borrar usuario (ADMIN)
-router.delete('/delete/:id', authenticateToken, checkRole([ROLES.ADMIN]), userController.deleteUser);
-
-// Middleware de errores (debe ir al final)
-router.use(errorHandler);
-
+// Exportamos el router para que se puedan utilizar las rutas que se hayan definido
 module.exports = router;

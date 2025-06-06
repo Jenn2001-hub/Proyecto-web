@@ -45,25 +45,35 @@ exports.removeUserFromProject = async (req, res) => {
 };
 
 // Controlador para obtener un proyecto por su ID
-exports.getProjectById = async (req, res) => {
+exports.getProjectsByUserId = async (req, res) => {
     try {
-        const id = req.params.id; // Obtiene el ID del proyecto desde la URL
-        const project = await projectService.getProjectById(id); // Busca el proyecto en la base de datos
-        res.status(200).json({ message: 'Proyecto obtenido con éxito', project }); // Devuelve el proyecto encontrado
+        const userId = req.user.id;
+        const projects = await projectService.getProjectsByUserId(userId);
+        res.json(projects);
     } catch (err) {
-        res.status(500).json({ message: err.message }); // Devuelve un mensaje de error si algo falla
+        res.status(500).json({ message: `Error al obtener los proyectos: ${err.message}` });
     }
 };
 
 // Controlador para actualizar un proyecto existente
+exports.getProjectById = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const project = await projectService.getProjectById(id);
+        res.status(200).json({ message: 'Proyecto obtenido con éxito', project });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
 exports.updateProject = async (req, res) => {
     try {
-        const id = req.params.id; // Obtiene el ID del proyecto desde la URL
-        const { nombre, descripcion, administrador_id } = req.body; // Obtiene los datos actualizados del proyecto
-        const project = await projectService.updateProject(id, nombre, descripcion, administrador_id); // Llama al servicio para actualizar el proyecto
-        res.status(200).json({ message: 'Proyecto actualizado con éxito', project }); // Devuelve el proyecto actualizado
+        const id = req.params.id;
+        const { nombre, descripcion, administrador_id } = req.body;
+        const project = await projectService.updateProject(id, nombre, descripcion, administrador_id);
+        res.status(200).json({ message: 'Proyecto actualizado con éxito', project });
     } catch (err) {
-        res.status(500).json({ message: err.message }); // Devuelve un mensaje de error si algo falla
+        res.status(500).json({ message: err.message });
     }
 };
 
