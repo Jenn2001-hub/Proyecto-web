@@ -15,10 +15,22 @@ exports.createProject = async (req, res) => {
 // Controlador para obtener todos los proyectos almacenados en la base de datos
 exports.getAllProjects = async (req, res) => {
     try {
-        const projects = await projectService.getAllProjects();
-        res.status(200).json({ message: 'Proyectos obtenidos con éxito', projects });
-    } catch (err) {
-        res.status(500).json({ message: err.message });
+        const projects = await Project.findAll({
+            attributes: ['id', 'nombre', 'descripcion', 'fecha_creacion'], // Define los atributos que se devolverán
+            order: [['fecha_creacion', 'DESC']] // Ordena los proyectos por fecha de creación, de más reciente a más antiguo
+        });
+
+        res.status(200).json({
+            success: true,
+            count: projects.length, // Muestra cuántos proyectos se encontraron
+            data: projects // Devuelve la lista de proyectos
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Error al obtener proyectos',
+            error: error.message // Devuelve un mensaje de error si ocurre un problema
+        });
     }
 };
 

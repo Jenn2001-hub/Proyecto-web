@@ -29,12 +29,12 @@ exports.createUser = async (nombre, email, password, rol_id, administrador_id) =
 };
 
 // Se exporta el servicio para obtener todos los usuarios de un administrador
-exports.getAllUsersByAdministradorId = async (administrador_id, name, email) => {
+exports.getAllUsersByAdministradorId = async (administrador_id, nombre, email) => {
     try {
          // whereClause para filtrar los usuarios
         const whereClause = { administrador_id };
-        if (name) {
-            whereClause.name = name;
+        if (nombre) {
+            whereClause.nombre = nombre;
         }
         if (email) {
             whereClause.email = email;
@@ -50,11 +50,30 @@ exports.getAllUsersByAdministradorId = async (administrador_id, name, email) => 
 // va a obtener la lista de usuarios que tienen  un rol en especifico y se exporta el servicio
 exports.getAllUsersByRolId = async (rol_id) => {
     try {
-        const users = await User.findAll({ where: {rol_id}, attributes: { exclude: ['password']}});// se excluye la contraseña para no compromenter datos sensibles
+        const users = await User.findAll({ 
+            where: {rol_id}, 
+            attributes: { exclude: ['password']}
+        });
         return users;
     } catch (err) {
         throw new Error(`Error al obtener  los usuarios: ${err.message}`);
     }
+};
+
+exports.getUserById = async (userId) => {
+  try {
+    const user = await User.findByPk(userId, {
+      attributes: { exclude: ['password'] } // Excluye la contraseña
+    });
+    
+    if (!user) {
+      throw new Error('Usuario no encontrado');
+    }
+    
+    return user;
+  } catch (error) {
+    throw new Error(`Error al buscar el usuario: ${error.message}`);
+  }
 };
 
 // Se exporta el servicio para actualizar usuarios
@@ -84,7 +103,7 @@ exports.updateUser = async (id, nombre, email, rol_id, administrador_id, admin_f
 
         return user;
     } catch (err) {
-        throw new Error(`Error al actualizar el usuario: ${err.message}`);
+        throw new Error(`${err.message}`);
     }
 };
 

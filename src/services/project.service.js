@@ -1,6 +1,5 @@
 const Project = require('../models/project.model');
 const User = require('../models/user.model');
-const { Op } = require('sequelize'); // Importa el operador "Op" de Sequelize para consultas en el servicio de getProjectBytUserId
 
 // Se exporta el servicio para crear nuevos proyectos
 exports.createProject = async (nombre, descripcion, administrador_id) => {
@@ -121,7 +120,6 @@ exports.assingUsersToProject = async (data) => {
             }
         ],
     });
-    return project;
 };
 
 // Se exporta el servicio para desasociar usuarios de un proyecto mediante IDs

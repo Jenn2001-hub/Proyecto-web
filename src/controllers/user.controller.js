@@ -34,6 +34,34 @@ exports.getAllUsersByRolId = async (req, res) => {
     }
 };
 
+// Función para obtener un usuario por su ID
+exports.getUserById = async (req, res) => {
+    try {
+        const user = await userService.getUserById(req.params.id); // Busca el usuario en la base de datos
+        
+        if (!user) {
+            return res.status(404).json({ 
+                success: false,
+                message: 'Usuario no encontrado' 
+            }); // Si el usuario no existe, devuelve un mensaje de error
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Usuario encontrado',
+            data: user
+        }); // Si lo encuentra, lo devuelve con éxito
+
+    } catch (error) {
+        console.error('Error en getUserById:', error); // Muestra el error en consola para depuración
+        res.status(500).json({
+            success: false,
+            message: 'Error al buscar el usuario',
+            error: error.message // Devuelve el mensaje de error en la respuesta
+        });
+    }
+};
+
 // Función para actualizar un usuario en la base de datos
 exports.updateUser = async (req, res) => {
     const { id } = req.params; // Obtiene el ID del usuario desde la URL

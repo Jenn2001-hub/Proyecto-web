@@ -15,8 +15,8 @@ app.use(cors({
 
 
 // Definir las rutas de la API
-app.use('/', authRoutes);
-app.use('/', userRoutes);
-app.use('/', projectRoutes);
+app.use('/auth', authRoutes);
+app.use('/user', userRoutes);
+app.use('/project', projectRoutes);
 
 module.exports = app;
