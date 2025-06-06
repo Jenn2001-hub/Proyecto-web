@@ -1,17 +1,12 @@
 // Importaciones necesarias para manejar usuarios y autenticación
 const userService = require('../services/user.service'); // Servicio que maneja las operaciones de usuarios en la base de datos
-const Project = require('../models/project.model'); // Modelo de proyectos
-const User = require('../models/user.model'); // Modelo de usuarios
-const bcrypt = require('bcryptjs'); // Librería para encriptar contraseñas
-const Role = require('../models/role');
-
 
 // Función para crear un nuevo usuario en la base de datos
 exports.createUser = async (req, res) => {
     try { 
-        const { nombre, email, password, rol_id } = req.body; // Obtiene los datos del usuario desde la solicitud
+        const { nombre, email, password, rol_id, administrador_id } = req.body; // Obtiene los datos del usuario desde la solicitud
         console.log(req.body); // Muestra los datos en consola para depuración
-        const newUser = await userService.createUser(nombre, email, password, rol_id); // Llama al servicio para crear el usuario
+        const newUser = await userService.createUser(nombre, email, password, rol_id, administrador_id); // Llama al servicio para crear el usuario
         res.status(201).json({ message: 'Usuario creado con éxito', user: newUser }); // Responde con el usuario creado
     } catch (err) {
         console.log(err); // Muestra el error en consola
@@ -72,7 +67,7 @@ exports.getUserById = async (req, res) => {
 // Función para actualizar un usuario en la base de datos
 exports.updateUser = async (req, res) => {
     const { id } = req.params; // Obtiene el ID del usuario desde la URL
-    const { nombre, email, rol_id } = req.body; // Obtiene los nuevos datos del usuario
+    const { nombre, email, rol_id, administrador_id } = req.body; // Obtiene los nuevos datos del usuario
     const admin_from_token = req.user.id; // Extrae el ID del administrador desde el token
     try {
         const user = await userService.updateUser(id, nombre, email, rol_id, admin_from_token); // Llama al servicio para actualizar el usuario
@@ -85,14 +80,13 @@ exports.updateUser = async (req, res) => {
 
 // Función para eliminar un usuario de la base de datos
 exports.deleteUser = async (req, res) => {
+    const { id } = req.params;
+    const admin_from_token = req.user.id;
     try {
-        const result = await userService.deleteUser(req.params.id); // Llama al servicio para eliminar el usuario por su ID
-        res.status(200).json(result); // Devuelve el resultado de la eliminación
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            error: error.message // Devuelve el mensaje de error en caso de fallo
-        });
+        const result = await userService.deleteUser(id, admin_from_token);
+        res.status(200).json(result);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
-};
+}
 

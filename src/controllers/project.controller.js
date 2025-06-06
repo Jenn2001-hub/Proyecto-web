@@ -4,8 +4,8 @@ const projectService = require('../services/project.service');
 // Controlador para crear un nuevo proyecto
 exports.createProject = async (req, res) => {
     try {
-        const { nombre, descripcion } = req.body; // Obtiene los datos del proyecto desde la solicitud
-        const newProject = await projectService.createProject(nombre, descripcion); // Llama al servicio para crear el proyecto
+        const { nombre, descripcion, administrador_id } = req.body; // Obtiene los datos del proyecto desde la solicitud
+        const newProject = await projectService.createProject(nombre, descripcion, administrador_id); // Llama al servicio para crear el proyecto
         res.status(201).json({ message: 'Proyecto creado con éxito', newProject }); // Responde con el proyecto creado
     } catch (err) {
         res.status(500).json({ message: err.message }); // Devuelve un mensaje de error si algo falla
@@ -15,22 +15,10 @@ exports.createProject = async (req, res) => {
 // Controlador para obtener todos los proyectos almacenados en la base de datos
 exports.getAllProjects = async (req, res) => {
     try {
-        const projects = await Project.findAll({
-            attributes: ['id', 'nombre', 'descripcion', 'fecha_creacion'], // Define los atributos que se devolverán
-            order: [['fecha_creacion', 'DESC']] // Ordena los proyectos por fecha de creación, de más reciente a más antiguo
-        });
-
-        res.status(200).json({
-            success: true,
-            count: projects.length, // Muestra cuántos proyectos se encontraron
-            data: projects // Devuelve la lista de proyectos
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Error al obtener proyectos',
-            error: error.message // Devuelve un mensaje de error si ocurre un problema
-        });
+        const projects = await projectService.getAllProjects();
+        res.status(200).json({ message: 'Proyectos obtenidos con éxito', projects });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
 };
 

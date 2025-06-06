@@ -9,6 +9,11 @@ const User = sequelize.define('usuarios', {
     password: { type: DataTypes.STRING, allowNull: false },
     rol_id: {type: DataTypes.INTEGER, allowNull: false, 
         references: { model: 'roles', key: 'id' }},
+    administrador_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: { model: 'usuarios', key: 'id'}
+    }
 }, {
     timestamps: false,                   
     tableName: 'usuarios' // asigna el nombre a la tabla en la base de datos
