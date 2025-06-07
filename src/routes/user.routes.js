@@ -6,7 +6,7 @@ const { ROLES } = require('../utils/constants');
 const errorHandler = require('../middlewares/error.middleware');
 
 // Rutas de solicitud para usuarios      //middleware para hacer autenticación y asi proteger las rutas
-router.post('/create', userController.createUser);
+router.post('/create', authenticateToken, checkRole([ROLES.ADMIN]), userController.createUser);
 router.put('/update/:id', authenticateToken, checkRole([ROLES.ADMIN]), userController.updateUser);
 router.get('/', authenticateToken, checkRole([ROLES.ADMIN]), userController.getAllUsersByAdministradorId);
 router.delete('/delete/:id', authenticateToken, checkRole([ROLES.ADMIN]), userController.deleteUser);

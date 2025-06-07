@@ -15,7 +15,7 @@ exports.createProject = async (req, res) => {
 // Controlador para obtener todos los proyectos almacenados en la base de datos
 exports.getAllProjects = async (req, res) => {
     try {
-        const projects = await Project.findAll({
+        const projects = await projectService.getAllProjects({
             attributes: ['id', 'nombre', 'descripcion', 'fecha_creacion'], // Define los atributos que se devolverán
             order: [['fecha_creacion', 'DESC']] // Ordena los proyectos por fecha de creación, de más reciente a más antiguo
         });
@@ -37,22 +37,50 @@ exports.getAllProjects = async (req, res) => {
 // Controlador para asignar usuarios a un proyecto
 exports.assingUsersToProject = async (req, res) => {
     try {
-        const data = req.body; // Obtiene los datos de la solicitud
-        const project = await projectService.assingUsersToProject(data); // Llama al servicio para asignar usuarios
-        res.status(200).json({ message: 'Usuarios asignados al proyecto con éxito', project }); // Responde con la asignación exitosa
+        const { usuario_id, proyecto_id } = req.body;
+        const administrador_id = req.user.id; // Obtener del token
+        
+        const data = {
+            usuario_id,
+            proyecto_id,
+            administrador_id
+        };
+        
+        const project = await projectService.assingUsersToProject(data);
+        res.status(200).json({ 
+            success: true,
+            message: 'Usuario asignado al proyecto con éxito', 
+            project 
+        });
     } catch (err) {
-        res.status(500).json({ message: err.message }); // Devuelve un mensaje de error si algo falla
+        res.status(500).json({ 
+            success: false,
+            message: err.message 
+        });
     }
 };
-
 // Controlador para eliminar un usuario de un proyecto
 exports.removeUserFromProject = async (req, res) => {
     try {
-        const data = req.body; // Obtiene los datos de la solicitud
-        const result = await projectService.removeUserFromProject(data); // Llama al servicio para eliminar al usuario del proyecto
-        res.status(200).json({ message: 'Usuario eliminado del proyecto con éxito', result }); // Responde con la confirmación de eliminación
+        if (!req.body.usuario_id || !req.body.proyecto_id) {
+            return res.status(400).json({
+                success: false,
+                message: 'Se requieren usuario_id y proyecto_id'
+            });
+        }
+
+        const result = await projectService.removeUserFromProject({
+            usuario_id: req.body.usuario_id,
+            proyecto_id: req.body.proyecto_id,
+            administrador_id: req.user.id
+        });
+        
+        res.status(200).json(result);
     } catch (err) {
-        res.status(500).json({ message: err.message }); // Devuelve un mensaje de error si algo falla
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
     }
 };
 

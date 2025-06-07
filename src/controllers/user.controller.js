@@ -4,7 +4,8 @@ const userService = require('../services/user.service'); // Servicio que maneja 
 // Función para crear un nuevo usuario en la base de datos
 exports.createUser = async (req, res) => {
     try { 
-        const { nombre, email, password, rol_id, administrador_id } = req.body; // Obtiene los datos del usuario desde la solicitud
+        const { nombre, email, password, rol_id } = req.body; // Obtiene los datos del usuario desde la solicitud
+        const administrador_id = req.user.id;
         const newUser = await userService.createUser(nombre, email, password, rol_id, administrador_id); // Llama al servicio para crear el usuario
         res.status(201).json({ message: 'Usuario creado con éxito', user: newUser }); // Responde con el usuario creado
     } catch (err) {

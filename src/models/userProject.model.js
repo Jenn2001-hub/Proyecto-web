@@ -1,6 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
 
+
 // Define el modelo usuarios_proyectos en la base de datos
 const userProject = sequelize.define('usuarios_proyectos', {
     usuario_id: {type: DataTypes.INTEGER, allowNull: false,                 

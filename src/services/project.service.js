@@ -1,5 +1,6 @@
 const Project = require('../models/project.model');
 const User = require('../models/user.model');
+const UserProject = require('../models/userProject.model');
 
 // Se exporta el servicio para crear nuevos proyectos
 exports.createProject = async (nombre, descripcion, administrador_id) => {
@@ -103,38 +104,91 @@ exports.getProjectById = async (id) => {
 
 // Se exporta el sevicio para asociar usuarios a un proyecto mediante IDs
 exports.assingUsersToProject = async (data) => {
-    const project = await Project.findByPk(data.projectId);
-    if (!project) throw new Error('Proyecto no encontrado');
-    
-    const users = await User.findAll({ where: { id: data.userIds }});
-    if (users.length !== data.userIds.length) throw new Error('Algunos usuarios no fueron encontrados');
-
-    await project.addUsuarios(users);
-    return await project.reload({
-        include: [
-            {
-                model: User,
-                as: 'usuarios',
-                attributes: ['id', 'nombre', 'email'],
-                through: { attributes: [] }
+    try {
+        // Verificar que el proyecto exista y pertenezca al administrador
+        const project = await Project.findOne({
+            where: {
+                id: data.proyecto_id,
+                administrador_id: data.administrador_id
             }
-        ],
-    });
+        });
+        
+        if (!project) throw new Error('Proyecto no encontrado o no tienes permisos');
+        
+        // Verificar que el usuario existe
+        const user = await User.findByPk(data.usuario_id);
+        if (!user) throw new Error('Usuario no encontrado');
+        
+        // Asociar usuario al proyecto
+        await project.addUsuario(user);
+        
+        return await project.reload({
+            include: [
+                {
+                    model: User,
+                    as: 'administrador',
+                    attributes: ['id', 'nombre', 'email']
+                },
+                {
+                    model: User,
+                    as: 'usuarios',
+                    attributes: ['id', 'nombre', 'email'],
+                    through: { attributes: [] }
+                }
+            ]
+        });
+    } catch (err) {
+        throw new Error(`Error al asignar usuario: ${err.message}`);
+    }
 };
+
 
 // Se exporta el servicio para desasociar usuarios de un proyecto mediante IDs
 exports.removeUserFromProject = async (data) => {
-    const project = await Project.findByPk(data.projectId);
-    if (!project) 
-        throw new Error('Proyecto no encontrado'); // Verifica que el proyecto exista
+    try {
+        // Validación de parámetros
+        if (!data.proyecto_id || !data.usuario_id || !data.administrador_id) {
+            throw new Error('Faltan parámetros requeridos');
+        }
 
-    const user = await User.findByPk(data.userId);
-    if (!user) 
-        throw new Error('Usuario no encontrado'); // Verifica que usuario exista
+        // Verificar proyecto y permisos
+        const project = await Project.findOne({
+            where: {
+                id: data.proyecto_id,
+                administrador_id: data.administrador_id
+            }
+        });
+        
+        if (!project) {
+            throw new Error('Proyecto no encontrado o no tienes permisos');
+        }
 
-    await project.removeUsuario(user); // Mediante el "removeUsuario" lo desasocia
+        // Verificar usuario
+        const user = await User.findByPk(data.usuario_id);
+        if (!user) {
+            throw new Error('Usuario no encontrado');
+        }
+
+        // Verificar asociación (forma más directa)
+        const removed = await UserProject.destroy({
+            where: {
+                usuario_id: data.usuario_id,
+                proyecto_id: data.proyecto_id
+            }
+        });
+
+        if (removed === 0) {
+            throw new Error('El usuario no estaba asociado a este proyecto');
+        }
+        
+        return { 
+            success: true,
+            message: 'Usuario removido del proyecto exitosamente' 
+        };
+    } catch (err) {
+        throw new Error(err.message);
+    }
 };
-
 
 // Se exporta el servicio para actualizar los datos de un proyecto
 exports.updateProject = async (id, nombre, descripcion, administrador_id) => {

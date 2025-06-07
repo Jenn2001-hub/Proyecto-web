@@ -12,6 +12,7 @@ const User = sequelize.define('usuarios', {
     administrador_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        defaultValue: 1,
         references: { model: 'usuarios', key: 'id'}
     }
 }, {
